@@ -1,0 +1,237 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+int warkar(int a);
+char *kolkar(int a);
+int losowanie();
+char *dispwarkar(int a);
+void dobranie(int a);
+int rwar(int a,int suma);
+
+
+struct karty {
+char *wartosc;
+char *kolor;
+};
+
+
+
+
+int main() {
+struct karty gracz[15],dealer[15];
+srand(time(0));
+int k=0,i,j,b,a[156],cobylo[30];
+j=2;
+for (i=0;i<156;i++) {
+a[i]=0;
+b=i%4;
+if (b==0) {
+a[i]=a[i]+100+j;
+}
+if (b==1) {
+a[i]=a[i]+200+j;
+}
+if (b==2){
+a[i]=a[i]+300+j;
+}
+if (b==3) {
+a[i]=a[i]+400+j;
+j++;
+if (j==15) j=2;
+}
+}
+
+
+int suma[]={0,0},ile[]={0,0};
+char p='t',d,status[256]={'s','t','a','r','t'};
+while (p=='t'){
+d='t';
+suma[0]=0;
+suma[1]=0;
+ile[0]=0;
+ile[1]=0;
+for (i=0;i<256;i++) status[i]=0;
+status[0]='s';
+status[1]='t';
+status[2]='a';
+status[3]='r';
+status[4]='t';
+for (i=0;i<30;i++) cobylo[i]=0;
+while (d=='t'){
+if (status[0]=='?'){
+printf("\n\tCo chcesz teraz zrobic?(hit albo stand)\n");
+scanf("%s",status);
+
+}
+
+//wazne cos start dobranie karty przez gracza
+                if ((status[0]=='s' && status[1]=='t' && status[2]=='a' && status[3]=='r')||(status[0]=='h' && status[1]=='i'))
+                {
+if (ile[0]>0)
+{
+        do
+        {
+        k=0;
+        i=losowanie();
+                for(j=ile[0]-1;j>=0;j--)
+                {
+                if (i==cobylo[j]) k++;
+
+
+
+                }
+
+        } while (k!=0);
+} else {i=losowanie();}
+        cobylo[ile[0]]=i;
+        gracz[ile[0]].wartosc=dispwarkar(warkar(a[i]));
+        gracz[ile[0]].kolor=kolkar(a[i]);
+        suma[0]=suma[0]+rwar(warkar(a[i]),suma[0]);
+        ile[0]++;
+//wazne cos koniec
+                }
+//dobranie karty przez dealera
+                if ((status[0]=='s' && status[1]=='t' && status[2]=='a' && status[3]=='r')||(status[0]=='s' && status[1]=='t' && status[2]=='a' && status[3]=='n'))
+                {
+if (ile[1]>0)
+{
+        do
+        {
+        k=0;
+        i=losowanie();
+                for(j=ile[1]-1;j>=0;j--)
+                {
+                if (i==cobylo[j]) k++;
+
+
+
+                }
+        } while (k!=0);
+} else {i=losowanie();}
+        cobylo[ile[1]]=i;
+        dealer[ile[1]].wartosc=dispwarkar(warkar(a[i]));
+        dealer[ile[1]].kolor=kolkar(a[i]);
+        suma[1]=suma[1]+rwar(warkar(a[i]),suma[1]);
+        ile[1]++;
+                }
+if (status[0]!='s' || status[1]!='t' || status[2]!='a' || status[3]!='r'){
+printf("\033c\tTwoja reka:\t\tReka dealera:\n\n");
+                if (ile[0]>=ile[1])
+                {
+        for (i=0;i<ile[1];i++){ //dziala tylko gdy gracz ma wiecej kart
+        printf("\t%s %s\t\t\t%s %s\n",gracz[i].wartosc,gracz[i].kolor,dealer[i].wartosc,dealer[i].kolor);
+        }
+        while (i<ile[0]){
+        printf("\t%s %s\n",gracz[i].wartosc,gracz[i].kolor);
+        i++;
+        }
+                } else {
+        for (i=0;i<ile[0];i++){ //dziala tylko gdy gracz ma wiecej kart
+        printf("\t%s %s\t\t\t%s %s\n",gracz[i].wartosc,gracz[i].kolor,dealer[i].wartosc,dealer[i].kolor);
+        }
+        while (i<ile[1]){
+        printf("\t\t\t\t%s %s\n",dealer[i].wartosc,dealer[i].kolor);
+        i++;
+        }
+                }
+printf("\n\tsuma gracza:%d\t\tsuma dealera:%d\n",suma[0],suma[1]);
+
+}
+if (status[0]=='h' && status[1]=='i'){
+for (i=0;i<256;i++) status[i]=0;
+status[0]='?';
+}
+if (status[0]=='s' && status[1]=='t' && status[2]=='a' && status[3]=='r'){
+for (i=0;i<256;i++) status[i]=0;
+status[0]='h';
+status[1]='i';
+status[2]='t';
+}
+        if (suma[0]>=21){
+        for (i=0;i<256;i++) status[i]=0;
+        status[0]='e';
+        status[1]='n';
+        status[2]='d';
+        }
+                if (suma[1]>=17){
+                for (i=0;i<256;i++) status[i]=0;
+                status[0]='e';
+                status[1]='n';
+                status[2]='d';
+                }
+        if (ile[0]==2 && suma[0]>=21)
+        {
+        for (i=0;i<256;i++) status[i]=0;
+        status[0]='e';
+        status[1]='n';
+        status[2]='d';
+        }
+if (status[0]=='e') d='n';
+}//wyjscie z petli while d
+if (suma[0]==21) printf("\tWygranko.\n");
+if (suma[0]>21) printf("\tPrzegranko.\n");
+if (suma[0]<21 && ((suma[1]>suma[0]) && (suma[1]<=21))) printf("\tPrzegranko.\n");
+if (suma[0]<21 && (suma[1]>21)) printf("\tWygranko.\n");
+if (suma[0]<21 && suma[1]<suma[0]) printf("\tWygranko.\n");
+if (suma[0]<21 && suma[0]==suma[1]) printf("\tRemis.\n");
+printf("\n\n\tGrasz dalej?(t/n)");
+scanf(" %c",&p);
+}//wyjscie z while p
+return 0;
+}
+
+int rwar(int a,int suma){
+if (a>=10 && a<14) a=10;
+if (a==14){
+a=(suma>10) ? 1 : 11;
+}
+return a;
+}
+
+int warkar(int a) {
+int b;
+b=a%100;
+return b;
+}
+
+
+int losowanie() {
+int a=rand()%156;
+return a;
+}
+
+
+
+
+char *kolkar(int a) {
+char *c;
+int b;
+b=a/100;
+if (b==1) c="kier";
+if (b==2) c="pik";
+if (b==3) c="karo";
+if (b==4) c="trefl";
+return c;
+}
+
+
+
+
+char *dispwarkar(int a) {
+char *c;
+if (a==2) c="2";
+if (a==3) c="3";
+if (a==4) c="4";
+if (a==5) c="5";
+if (a==6) c="6";
+if (a==7) c="7";
+if (a==8) c="8";
+if (a==9) c="9";
+if (a==10) c="10";
+if (a==11) c="J";
+if (a==12) c="Q";
+if (a==13) c="K";
+if (a==14) c="A";
+return c;
+}
